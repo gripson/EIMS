@@ -1,0 +1,248 @@
+<script type="text/javascript">
+$(function() {
+    parent.$.messager.progress('close');
+    $('#form').form({
+        url : '/positionaction/positionsave',
+        onSubmit : function() {
+            parent.$.messager.progress({
+                title : '提示',
+                text : '数据处理中，请稍后....'
+            });
+            var isValid = $(this).form('validate');
+            if (!isValid) {
+                parent.$.messager.progress('close');
+            }
+            return isValid;
+        },
+        success : function(result) {
+            parent.$.messager.progress('close');
+//                result = $.parseJSON(result);
+            if (result) {
+                parent.$.modalDialog.openner_dataGrid.datagrid('reload');//之所以能在这里调用到parent.$.modalDialog.openner_dataGrid这个对象
+                parent.$.modalDialog.handler.dialog('close');
+                parent.$.messager.alert('修改成功', result, 'success');
+            } else {
+                parent.$.messager.alert('错误', result, 'error');
+            }
+        }
+    });
+
+    var orgnameid=$('#orgname').combobox({
+//            method:'GET',
+//            url:'/combobox',
+        url:'@{DepartmentAction.organizationcombobox()}',
+        valueField:'orgname',
+        textField:'orgname',
+        value:"${pos.orgname}",
+        onSelect:function(record){
+            //刷新数据，重新读取机构下的部门
+            departmentid.combobox({
+                disabled:false,
+                url:'/positionaction/deparmentcombobox?orgname='+record.orgname,
+                valueField:'departmentname',
+                textField:'departmentname'
+            }).combobox('clear');
+        }
+    });
+
+    var departmentid=$('#department').combobox({
+//            method:'GET',
+//            url:'/combobox',
+        url:'/positionaction/deparmentallcombobox',
+        valueField:'departmentname',
+        textField:'departmentname',
+        value:"${pos.department}"
+    });
+
+    $("#workshift_cycle").combobox({
+        valueField:'id',
+        textField: 'value',
+        panelHeight:'auto',
+        data: [{
+            id: '1',
+            value: '1'
+        },{
+            id: '2',
+            value: '2'
+        },{
+            id: '3',
+            value: '3'
+        },{
+            id: '4',
+            value: '4'
+        },{
+            id: '5',
+            value: '5'
+        },{
+            id: '6',
+            value: '6'
+        },{
+            id: '7',
+            value: '7'
+        },{
+            id: '8',
+            value: '8'
+        },{
+            id: '9',
+            value: '9'
+        },{
+            id: '10',
+            value: '10'
+        },{
+            id: '11',
+            value: '11'
+        },{
+            id: '12',
+            value: '12'
+        }]
+    });
+
+    $("#communicate_cycle").combobox({
+        valueField:'id',
+        textField: 'value',
+        panelHeight:'auto',
+        data: [{
+            id: '1',
+            value: '1'
+        },{
+            id: '2',
+            value: '2'
+        },{
+            id: '3',
+            value: '3'
+        },{
+            id: '4',
+            value: '4'
+        },{
+            id: '5',
+            value: '5'
+        },{
+            id: '6',
+            value: '6'
+        },{
+            id: '7',
+            value: '7'
+        },{
+            id: '8',
+            value: '8'
+        },{
+            id: '9',
+            value: '9'
+        },{
+            id: '10',
+            value: '10'
+        },{
+            id: '11',
+            value: '11'
+        },{
+            id: '12',
+            value: '12'
+        }]
+    });
+
+    $("#level").combobox({
+        valueField:'id',
+        textField: 'value',
+        panelHeight:'auto',
+        data: [{
+            id: '高层管理',
+            value: '高层管理'
+        },{
+            id: '中层管理',
+            value: '中层管理'
+        },{
+            id: '基层管理',
+            value: '基层管理'
+        },{
+            id: '普通员工',
+            value: '普通员工'
+        }]
+    });
+});
+$("input[name='pos.manage'][value=${pos.manage}]").attr("checked","checked");
+$("input[name='pos.system_admin'][value=${pos.system_admin}]").attr("checked","checked");
+$("input[name='pos.system_manage'][value=${pos.system_manage}]").attr("checked","checked");
+$("input[name='pos.system_market'][value=${pos.system_market}]").attr("checked","checked");
+$("input[name='pos.system_special'][value=${pos.system_special}]").attr("checked","checked");
+$("input[name='pos.system_develop'][value=${pos.system_develop}]").attr("checked","checked");
+$("input[name='pos.system_personnel'][value=${pos.system_personnel}]").attr("checked","checked");
+$("input[name='pos.system_head'][value=${pos.system_head}]").attr("checked","checked");
+$("input[name='pos.system_secondhead'][value=${pos.system_secondhead}]").attr("checked","checked");
+$("input[name='pos.system_Clerk'][value=${pos.system_Clerk}]").attr("checked","checked");
+$("input[name='pos.workshift'][value=${pos.workshift}]").attr("checked","checked");
+$("input[name='pos.communicate'][value=${pos.communicate}]").attr("checked","checked");
+</script>
+<div class="easyui-layout" data-options="fit:true,border:false">
+    <div data-options="region:'center',border:false" title="">
+        <form id="form" method="post">
+            <table style="padding-top: 10px;padding-left:5px" class="table table-hover table-condensed">
+                <tr>
+                    <th >所属机构</th>
+                    <td><input id="orgname" name="pos.orgname" type="text" data-options="required:true" ></td>
+                    <th style="padding-left: 60px">所属部门</th>
+                    <td><input id="department" name="pos.department" type="text" data-options="required:true" ></td>
+                </tr>
+                <tr>
+                    <th>职位名称</th>
+                    <td><input id="departmentname" type="text" class="easyui-validatebox span2" name="pos.departmentname" value="${pos.departmentname}" data-options="required:true"><input type="checkbox" name="pos.manage" value="√">管理职位</td>
+                    <th style="padding-left: 60px">上级职位</th>
+                    <td><input id="higherposition" name="pos.higherposition" value="${pos.higherposition}" class="easyui-validatebox span2"></td>
+                </tr>
+                <tr>
+                    <th>职位级别</th>
+                    <td><input id="level" name="pos.level" value="${pos.level}" class="easyui-validatebox span2"></td>
+                    <th style="padding-left: 60px">编制人数</th>
+                    <td><input id="staffnum" name="pos.staffnum" value="${pos.staffnum}" class="easyui-validatebox span2" data-options="required:true"></td>
+                </tr>
+            </table>
+            <table style="padding-top: 10px;padding-left:5px" class="table table-hover table-condensed">
+                <tr>
+                    <th>所属体系</th>
+                    <td><input type="checkbox" name="pos.system_admin" value="行政职能序列">行政职能序列
+                        <input type="checkbox" name="pos.system_manage" value="管理人员序列">管理人员序列
+                        <input type="checkbox" name="pos.system_market" value="市场职能序列">市场职能序列
+                        <input type="checkbox" name="pos.system_special" value="特殊岗位序列">特殊岗位序列
+                        <input type="checkbox" name="pos.system_develop" value="开发人员序列">开发人员序列
+                    </td>
+                </tr>
+            </table>
+            <table style="padding-left:5px" class="table table-hover table-condensed">
+                <tr>
+                    <th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+                    <td><input type="checkbox" name="pos.system_personnel" value="人事职能序列">人事职能序列
+                        <input type="checkbox" name="pos.system_head" value="处长">处长
+                        <input type="checkbox" name="pos.system_secondhead" value="副处长">副处长
+                        <input type="checkbox" name="pos.system_Clerk" value="科员">科员
+                    </td>
+                </tr>
+            </table>
+            <table style="padding-top: 10px;padding-left:5px" class="table table-hover table-condensed">
+                <tr>
+                    <th>职位操作</th>
+                    <td><input type="checkbox" name="pos.workshift" value="√">需定期轮岗 周期：<input id="workshift_cycle" name="pos.workshift_cycle" style="width: 100px;" value="${pos.workshift_cycle}" class="easyui-combobox">个月</td>
+                </tr>
+                <tr>
+                    <th>&nbsp;&nbsp;&nbsp;&nbsp;</th>
+                    <td><input type="checkbox" name="pos.communicate" value="√">需定期交流 周期：<input id="communicate_cycle" name="pos.communicate_cycle" style="width: 100px;" value="${pos.communicate_cycle}" class="easyui-combobox">个月</td>
+                </tr>
+            </table>
+            <table style="padding-left:5px">
+                <tr><th>&nbsp;</th></tr>
+                <tr>
+                    <th>职位描述</th>
+                    <td ><textarea style="width: 470px; height: 60px;" id="description" name="pos.description">${pos.description}</textarea></td>
+                </tr>
+                <tr><th>&nbsp;</th></tr>
+                <tr>
+                    <th>岗位职责</th>
+                    <td><textarea  style="width: 470px; height: 60px;" id="duty" name="pos.duty" >${pos.duty}</textarea></td>
+                </tr>
+                <tr><th>&nbsp;</th></tr>
+                <tr>
+                    <th>职业要求</th>
+                    <td><textarea  style="width: 470px; height: 60px;" id="required" name="pos.required" >${pos.required}</textarea></td>
+                </tr>
+            </table>
+        </form>
+    </div>
+</div>

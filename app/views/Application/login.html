@@ -1,0 +1,40 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+	<head>
+		<meta http-equiv="Content-type" content="text/html; charset=${_response_encoding}">
+		<title></title>
+		<link rel="stylesheet" href="@{'/public/stylesheets/default.css'}" type="text/css" media="screen" title="no title" charset="${_response_encoding}">
+	    <link rel="stylesheet" href="@{'/public/stylesheets/admin.css'}" type="text/css" media="screen" title="no title" charset="${_response_encoding}">
+        <script src="../../public/javascripts/jquery-1.6.4.min.js" type="text/javascript"></script>
+        <script src="http://counter.sina.com.cn/ip/" type="text/javascript" charset="utf-8"></script><!--获取接口数据，注意charset -->
+        <script typr="text/javascript" charset="utf-8">
+            $(function() {
+                var ip=ILData[0];
+                $("#ip").val(ip);
+            })
+        </script>
+	</head>
+
+    <body id="jobs">
+
+	<div id="login">
+
+		<h2>企业信息管理系统登录</h2>
+		#{form @logincheck()}
+			#{if flash.error}
+				<div id="loginError">
+					${flash.error}
+				</div>
+			#{/if}
+			
+			<label for="email">用户名</label>
+			<input type="text" name="name" id="name" value="" />
+			
+			<label for="password">密码</label>
+			<input type="password" name="password" value="" id="password" />
+            <input type="text" name="ip" value="" id="ip" style="display:none;"/>
+			<input class="submit" name="signin" type="submit" value="登录" id="signin"/>
+		#{/form}
+	</div>
+    </body>
+</html>

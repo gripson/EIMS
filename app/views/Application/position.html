@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="../../public/javascripts/jquery-1.6.4.min.js" type="text/javascript"></script>
+*{<script src="../../public/jquery-easyui-1.3.5/jquery.min.js" type="text/javascript"></script>}*
+    <script src="../../public/jquery-easyui-1.3.5/jquery.easyui.min.js" type="text/javascript"></script>
+
+    <script src="../../public/jquery-easyui-1.3.5/locale/easyui-lang-zh_CN.js" type="text/javascript"></script>
+
+    <link href="../../public/jquery-easyui-1.3.5/themes/icon.css" rel="stylesheet" type="text/css"/>
+    <link href="../../public/jquery-easyui-1.3.5/themes/default/easyui.css" rel="stylesheet" type="text/css"/>
+    <link href="../../public/stylesheets/extEasyUIIcon.css" rel="stylesheet" type="text/css"/>
+    <script src="../../public/javascripts/jquery.format.js" type="text/javascript"></script>
+
+    <script src="../../public/javascripts/extEasyUI.js" type="text/javascript"></script>
+
+    <script type="text/javascript">
+        $.canEditPwd = true;
+    </script>
+    <script typr="text/javascript" charset="utf-8">
+        var dataGrid;
+        $(function(){
+            dataGrid= $('#position_datagrid').datagrid({
+                url:'@{PositionAction.select()}',
+//            title:'dategrid',
+//            iconCls:'icon-save',
+                pagination:true,
+                pageSize:10,
+                pageList:[10,20,30,40,50,60],
+                fit:true,//自适应大小
+                fitColumns:true, //滚动条
+                nowrap:false,//折行
+                border:false,//取消边框
+                idField:'id',//换页记住标识
+                sortName:'id',
+                sortOrder:'desc',
+                columns:[ [{
+                    title: '所属机构',
+                    field: 'orgname',
+                    width: 100,
+                    sortable:true
+                },{
+                    title: '所属部门',
+                    field: 'department',
+                    width: 100,
+                    sortable:true
+                },{
+                    title: '职位名称',
+                    field: 'departmentname',
+                    width: 100,
+                    sortable:true
+                },{
+                    title: '管理职位',
+                    field: 'manage',
+                    width: 100,
+                    sortable:true
+                },{
+                    title: '编制人数',
+                    field: 'staffnum',
+                    width: 100,
+                    sortable:true
+                },{
+                    title: '在职人数',
+                    field: 'strength',
+                    width: 100,
+                    sortable:true
+                },{
+                    title: '上级职位',
+                    field: 'higherposition',
+                    width: 100,
+                    sortable:true
+                },{
+                    title: '所属体系',
+                    field: 'system',
+                    width: 100,
+                    sortable:true
+                },{
+                    title: '需轮岗',
+                    field: 'workshift',
+                    width: 100,
+                    sortable:true
+                },{
+                    title: '需交流',
+                    field: 'communicate',
+                    width: 100,
+                    sortable:true
+                },{
+                    field : 'action',
+                    title : '操作',
+                    width : 220,
+                    formatter : function(value, row, index) {
+                        return '<button onclick="check('+index+')">查看编辑</button><button onclick="deleteFun('+index+')">删除</button>'
+                    }
+                }] ],//多级表头控制
+                toolbar:'#toolbar'
+            });
+        });
+
+        //    function show(id){
+        //        var rows= dataGrid.datagrid('getRows');
+        //
+        //        console.info(rows[id].id);
+        //    }
+        function check(id) {
+            var rows= dataGrid.datagrid('getRows');
+            dataGrid.datagrid('unselectAll').datagrid('uncheckAll');
+            parent.$.modalDialog({
+                title : '查看部门信息',
+                width :700,
+                height :500,
+                href : 'application/positioncheck?id='+rows[id].id,
+                buttons : [ {
+                    text : '提交',
+                    handler : function(){
+                        parent.$.modalDialog.openner_dataGrid = dataGrid;//因为添加成功之后，需要刷新这个dataGrid，所以先预定义好
+                        var f = parent.$.modalDialog.handler.find('#form');
+                        f.submit();
+                    }
+                }]
+            });
+        }
+
+        function addFun() {
+            parent.$.modalDialog({
+                title : '添加职位',
+                width :700,
+                height :500,
+                href : '@{positionadd()}',
+                buttons : [ {
+                    text : '添加',
+                    handler : function() {
+                        parent.$.modalDialog.openner_dataGrid = dataGrid;//因为添加成功之后，需要刷新这个dataGrid，所以先预定义好
+                        var f = parent.$.modalDialog.handler.find('#form');
+                        f.submit();
+                    }
+                },{
+                    text : '关闭',
+                    handler : function() {
+                        parent.$.modalDialog.handler.dialog('close');
+                    }
+                } ]
+            });
+        }
+
+        function deleteFun(id) {
+            var rows= dataGrid.datagrid('getRows');
+            if (id == undefined) {//点击右键菜单才会触发这个
+                rows = dataGrid.datagrid('getSelections');
+                id = rows[0].id;
+            } else {//点击操作里面的删除图标会触发这个
+                dataGrid.datagrid('unselectAll').datagrid('uncheckAll');
+                id = rows[id].id;
+            }
+            parent.$.messager.confirm('询问', '您是否要删除当前机构？', function(b) {
+                if (b) {
+                    var currentUserId = '123111111';/*当前登录用户的ID*/
+                    if (currentUserId != id) {
+                        parent.$.messager.progress({
+                            title : '提示',
+                            text : '数据处理中，请稍后....'
+                        });
+                        $.post('positionaction/positiondelete', {
+                            id : id
+                        }, function(result) {
+                            if (result) {
+                                parent.$.messager.alert('提示', result, 'info');
+                                dataGrid.datagrid('reload');
+                            }
+                            parent.$.messager.progress('close');
+                        });
+                    } else {
+                        parent.$.messager.show({
+                            title : '提示',
+                            msg : '不可以删除自己！'
+                        });
+                    }
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+<div class="easyui-layout" data-options="fit:true,border:false" >
+    <div data-options="region:'center',fit:true,border:false">
+        <table id="position_datagrid"></table>
+    </div>
+</div>
+<div id="toolbar" style="display: none;">
+    <a onclick="addFun();" href="javascript:void(0);" class="easyui-linkbutton" data-options="plain:true,iconCls:'pencil_add'">添加</a>
+*{<a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'brick_add',plain:true" onclick="searchFun();">过滤条件</a>}*
+</div>
+</body>
+</html>
+

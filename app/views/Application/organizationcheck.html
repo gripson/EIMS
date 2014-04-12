@@ -1,0 +1,71 @@
+<script type="text/javascript">
+    $(function() {
+        parent.$.messager.progress('close');
+        $('#form').form({
+            url : '/organizationaction/organizationsave',
+            onSubmit : function() {
+                console.info($("#pwd").val());
+                parent.$.messager.progress({
+                    title : '提示',
+                    text : '数据处理中，请稍后....'
+                });
+                var isValid = $(this).form('validate');
+                if (!isValid) {
+                    parent.$.messager.progress('close');
+                }
+                return isValid;
+            },
+            success : function(result) {
+                parent.$.messager.progress('close');
+//                result = $.parseJSON(result);
+                if (result) {
+                    parent.$.modalDialog.openner_dataGrid.datagrid('reload');//之所以能在这里调用到parent.$.modalDialog.openner_dataGrid这个对象
+                    parent.$.modalDialog.handler.dialog('close');
+                    parent.$.messager.alert('修改成功', result, 'success');
+                } else {
+                    parent.$.messager.alert('错误', result, 'error');
+                }
+            }
+        });
+        //测试grid取值
+
+    });
+
+
+</script>
+<div class="easyui-layout" data-options="fit:true,border:false">
+    <div data-options="region:'center',border:false" title="" style="overflow: hidden;">
+        <form id="form" method="post">
+            <table class="table table-hover table-condensed">
+                <tr>
+                    <th>机构名称</th>
+                    <td><input name="orgname" type="text" value="${org.orgname}"  class="easyui-validatebox span2" readonly="readonly" data-options="required:true"></td>
+                </tr>
+                <tr>
+                    <th>机构简称</th>
+                    <td><input name="orgabbreviation" type="text" value="${org.orgabbreviation}"  class="easyui-validatebox span2"  readonly="readonly" data-options="required:true"></td>
+                </tr>
+                <tr>
+                    <th>办公电话</th>
+                    <td><input name="phone" type="text" value="${org.phone}"  class="easyui-validatebox span2" data-options="required:true"></td>
+                </tr>
+                <tr>
+                    <th>传真号码</th>
+                    <td><input name="fax" type="text" value="${org.fax}"  class="easyui-validatebox span2" data-options="required:true"></td>
+                </tr>
+                <tr>
+                    <th>邮政编码</th>
+                    <td><input name="postcode" type="text" value="${org.postcode}"  class="easyui-validatebox span2" data-options="required:true"></td>
+                </tr>
+                <tr>
+                    <th>地址</th>
+                    <td><input name="address" type="text" value="${org.address}"  class="easyui-validatebox span2" data-options="required:true"></td>
+                </tr>
+                <tr>
+                    <th>网址</th>
+                    <td><input name="web" type="text" value="${org.web}"  class="easyui-validatebox span2" ></td>
+                </tr>
+            </table>
+        </form>
+    </div>
+</div>
