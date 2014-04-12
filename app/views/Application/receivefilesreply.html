@@ -1,0 +1,98 @@
+<!-- 引入kindEditor插件 -->
+<link href="../../public/kindeditor-4.1.7/themes/default/default.css" rel="stylesheet" type="text/css" charset="utf-8"/>
+<script src="../../public/kindeditor-4.1.7/kindeditor-all-min.js" type="text/javascript"  charset="utf-8"></script>
+<script charset="utf-8" src="../../public/kindeditor-4.1.7/lang/zh_CN.js"></script>
+
+<script type="text/javascript">
+    var editor;
+    $(function() {
+        window.setTimeout(function() {
+            editor = KindEditor.create('#note', {
+                width : '280px',
+                height : '300px',
+                items : [ 'source', '|', 'undo', 'redo', '|', 'preview', 'print', 'template', 'code', 'cut', 'copy', 'paste', 'plainpaste', 'wordpaste', '|', 'justifyleft', 'justifycenter', 'justifyright', 'justifyfull', 'insertorderedlist', 'insertunorderedlist', 'indent', 'outdent', 'subscript', 'superscript', 'clearhtml', 'quickformat', 'selectall', '|', 'fullscreen', '/', 'formatblock', 'fontname', 'fontsize', '|', 'forecolor', 'hilitecolor', 'bold', 'italic', 'underline', 'strikethrough', 'lineheight', 'removeformat', '|', 'image', 'flash', 'media', 'insertfile', 'table', 'hr', 'emoticons', 'baidumap', 'pagebreak', 'anchor', 'link', 'unlink' ],
+                uploadJson : 'archivesaction/fileupload',
+                fileManagerJson : 'archivesaction/fileManage',
+                allowFileManager : true
+            });
+
+            editor = KindEditor.create('#check', {
+                width : '280px',
+                height : '300px',
+                items : [ 'source', '|', 'undo', 'redo', '|', 'preview', 'print', 'template', 'code', 'cut', 'copy', 'paste', 'plainpaste', 'wordpaste', '|', 'justifyleft', 'justifycenter', 'justifyright', 'justifyfull', 'insertorderedlist', 'insertunorderedlist', 'indent', 'outdent', 'subscript', 'superscript', 'clearhtml', 'quickformat', 'selectall', '|', 'fullscreen', '/', 'formatblock', 'fontname', 'fontsize', '|', 'forecolor', 'hilitecolor', 'bold', 'italic', 'underline', 'strikethrough', 'lineheight', 'removeformat', '|', 'image', 'flash', 'media', 'insertfile', 'table', 'hr', 'emoticons', 'baidumap', 'pagebreak', 'anchor', 'link', 'unlink' ],
+                uploadJson : 'archivesaction/fileupload',
+                fileManagerJson : 'archivesaction/fileManage',
+                allowFileManager : true
+            });
+            parent.$.messager.progress('close');
+        }, 1);
+
+        $('#form').form({
+            url : 'personalaction/sfilereply',
+            onSubmit : function() {
+                var filename = document.getElementById("file").value;
+                $('#filename').val(filename);
+                editor.sync();
+                parent.$.messager.progress({
+                    title : '提示',
+                    text : '数据处理中，请稍后....'
+                });
+                var isValid = $(this).form('validate');
+                if (!isValid) {
+                    parent.$.messager.progress('close');
+                }
+                return isValid;
+            },
+            success : function(result) {
+                parent.$.messager.progress('close');
+                if (result) {
+                    parent.$.modalDialog.openner_dataGrid.datagrid('reload');//之所以能在这里调用到parent.$.modalDialog.openner_dataGrid这个对象，是因为user.jsp页面预定义好了
+                    parent.$.modalDialog.handler.dialog('close');
+                    parent.$.messager.alert('结果',result);
+                } else {
+                    parent.$.messager.alert('错误', result, 'error');
+                }
+            }
+        });
+
+    });
+
+</script>
+<div class="easyui-layout" data-options="fit:true,border:false">
+    <div data-options="region:'center',border:false" title="" style="">
+        <form id="form" method="post" enctype="multipart/form-data">
+            <table class="table table-hover table-condensed" style="padding-top: 5px;">
+                <tr>
+                    <th>标题</th>
+                    <td><input name="arc.title" type="text" class="easyui-validatebox span2"  value="${arc.ptitle}" ></td>
+                </tr>
+                <tr>
+                    <th>副标题</th>
+                    <td><input name="arc.subtitle" type="text" placeholder="" class="easyui-validatebox span2"  value="${arc.subtitle}"></td>
+                </tr>
+                <tr>
+                    <th>关键字</th>
+                    <td><input id="keyword" name="arc.keyword" type="text" value="${arc.keyword}_回复"  class="easyui-validatebox span2" data-options="required:true"></td>
+                </tr>
+                <tr>
+                    <th>发送人</th>
+                    <td><input id="sender" name="arc.sender" type="text" value="${arc.recperson}" class="easyui-validatebox span2"></td>
+                    <th>接收人</th>
+                    <td><input id="recperson" name="arc.recperson" type="text" value="${arc.sender}"  class="easyui-validatebox span2"></td>
+                </tr>
+                <tr>
+                    <th>简&nbsp;&nbsp;&nbsp;&nbsp;介</th>
+                    <td colspan="3"><textarea name="arc.notes" id="note" cols="20" rows="5" style="visibility: hidden;">${arc.notes}</textarea></td>
+                </tr>
+                <tr>
+                    <th>附件添加</th>
+                    <td colspan="2"><input id="file" name="arc.file" type="file" class="easyui-validatebox span2" value=""></td>
+                    <td><input id="filename" name="arc.filename" type="text" class="easyui-validatebox span2" style="visibility:hidden" value=""></td>
+                </tr>
+                    <th>审核意见</th>
+                    <td colspan="3"><textarea name="arc.checkinfo" id="check" cols="20" rows="5" style="visibility: hidden;"></textarea></td>
+                </tr>
+            </table>
+        </form>
+    </div>
+</div>

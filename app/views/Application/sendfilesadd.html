@@ -1,0 +1,143 @@
+<!-- 引入kindEditor插件 -->
+<link href="../../public/kindeditor-4.1.7/themes/default/default.css" rel="stylesheet" type="text/css" charset="utf-8"/>
+<script src="../../public/kindeditor-4.1.7/kindeditor-all-min.js" type="text/javascript"  charset="utf-8"></script>
+<script charset="utf-8" src="../../public/kindeditor-4.1.7/lang/zh_CN.js"></script>
+
+<script type="text/javascript">
+    var editor;
+    $(function() {
+        window.setTimeout(function() {
+            editor = KindEditor.create('#note', {
+                width : '280px',
+                height : '300px',
+                items : [ 'source', '|', 'undo', 'redo', '|', 'preview', 'print', 'template', 'code', 'cut', 'copy', 'paste', 'plainpaste', 'wordpaste', '|', 'justifyleft', 'justifycenter', 'justifyright', 'justifyfull', 'insertorderedlist', 'insertunorderedlist', 'indent', 'outdent', 'subscript', 'superscript', 'clearhtml', 'quickformat', 'selectall', '|', 'fullscreen', '/', 'formatblock', 'fontname', 'fontsize', '|', 'forecolor', 'hilitecolor', 'bold', 'italic', 'underline', 'strikethrough', 'lineheight', 'removeformat', '|', 'image', 'flash', 'media', 'insertfile', 'table', 'hr', 'emoticons', 'baidumap', 'pagebreak', 'anchor', 'link', 'unlink' ],
+                uploadJson : 'archivesaction/fileupload',
+                fileManagerJson : 'archivesaction/fileManage',
+                allowFileManager : true
+            });
+            parent.$.messager.progress('close');
+        }, 1);
+
+        $('#form').form({
+            url : 'personalaction/sfileadd',
+            onSubmit : function() {
+                var filename = document.getElementById("file").value;
+                $('#filename').val(filename);
+                editor.sync();
+                parent.$.messager.progress({
+                    title : '提示',
+                    text : '数据处理中，请稍后....'
+                });
+                var isValid = $(this).form('validate');
+                if (!isValid) {
+                    parent.$.messager.progress('close');
+                }
+                return isValid;
+            },
+            success : function(result) {
+                parent.$.messager.progress('close');
+                if (result) {
+                    parent.$.modalDialog.openner_dataGrid.datagrid('reload');//之所以能在这里调用到parent.$.modalDialog.openner_dataGrid这个对象，是因为user.jsp页面预定义好了
+                    parent.$.modalDialog.handler.dialog('close');
+                    parent.$.messager.alert('结果',result);
+                } else {
+                    parent.$.messager.alert('错误', result, 'error');
+                }
+            }
+        });
+
+        var organizationonly=$('#reorangeonly').combobox({
+            url:'@{DepartmentAction.organizationcombobox()}',
+            valueField:'orgname',
+            textField:'orgname',
+            value:"",
+            onSelect:function(record){
+                orgnameid.combobox({}).combobox('clear');
+                departmentid.combobox({}).combobox('clear');
+                personid.combobox({}).combobox('clear');
+            }
+        });
+
+        var orgnameid=$('#reorange').combobox({
+            url:'@{DepartmentAction.organizationcombobox()}',
+            valueField:'orgname',
+            textField:'orgname',
+            value:"",
+            onSelect:function(record){
+                //刷新数据，重新读取机构下的部门
+                departmentid.combobox({
+                    disabled:false,
+                    url:'/positionaction/deparmentcombobox?orgname='+record.orgname,
+                    valueField:'departmentname',
+                    textField:'departmentname'
+                }).combobox('clear');
+                organizationonly.combobox({}).combobox('clear');
+                personid.combobox({}).combobox('clear');
+            }
+        });
+
+        var departmentid=$('#recdeparment').combobox({
+//            onSelect:function(record){
+//                //刷新数据，重新读取机构下的部门
+//            }
+        });
+
+        var personid=$('#recperson').combobox({
+            url:'@{permissionaction.usercombobox()}',
+            valueField:'truename',
+            textField:'truename',
+            onSelect:function(record){
+                orgnameid.combobox({}).combobox('clear');
+                departmentid.combobox({}).combobox('clear');
+                organizationonly.combobox({}).combobox('clear');
+            }
+        });
+    });
+
+</script>
+<div class="easyui-layout" data-options="fit:true,border:false">
+    <div data-options="region:'center',border:false" title="" style="">
+        <form id="form" method="post" enctype="multipart/form-data">
+            <table class="table table-hover table-condensed" style="padding-top: 5px;">
+                <tr>
+                    <th>标题</th>
+                    <td><input name="arc.title" type="text" class="easyui-validatebox span2"  value="" ></td>
+                </tr>
+                <tr>
+                    <th>副标题</th>
+                    <td><input name="arc.subtitle" type="text" placeholder="" class="easyui-validatebox span2"  value=""></td>
+                </tr>
+                <tr>
+                    <th>关键字</th>
+                    <td><input id="keyword" name="arc.keyword" type="text" value=""  class="easyui-validatebox span2" data-options="required:true"></td>
+                </tr>
+                <tr>
+                    <th style="color: red;" colspan="3">可以发给机构或，部门，个人</th>
+                </tr>
+                <tr>
+                    <th>发给机构</th>
+                    <td><input id="reorangeonly" name="arc.reorangeonly" type="text" value=""  class="easyui-combobox"></td>
+                </tr>
+                <tr>
+                    <th>发给部门（选择机构）</th>
+                    <td><input id="reorange" name="arc.reorange" type="text" value=""  class="easyui-combobox"></td>
+                    <th>选择部门</th>
+                    <td><input id="recdeparment" name="arc.recdeparment" type="text" value=""  class="easyui-combobox"></td>
+                </tr>
+                <tr>
+                    <th>发给个人</th>
+                    <td><input id="recperson" name="arc.recperson" type="text" value=""  class="easyui-combobox"></td>
+                </tr>
+                <tr>
+                    <th>简&nbsp;&nbsp;&nbsp;&nbsp;介</th>
+                    <td colspan="3"><textarea name="arc.notes" id="note" cols="20" rows="5" style="visibility: hidden;"></textarea></td>
+                </tr>
+                <tr>
+                    <th>附件添加</th>
+                    <td colspan="2"><input id="file" name="arc.file" type="file" class="easyui-validatebox span2" value=""></td>
+                    <td><input id="filename" name="arc.filename" type="text" class="easyui-validatebox span2" style="visibility:hidden" value=""></td>
+                </tr>
+            </table>
+        </form>
+    </div>
+</div>
