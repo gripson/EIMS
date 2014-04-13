@@ -11,14 +11,14 @@ System description:
 Enterprise information management system, staff management, departmental management, rights management, file management, business management, customer relationship management, file send and receive, project management, query statistics and other functions
 
 As a core part of the system function is the function module to achieve the following functions:
-Staff management: the ability of employees to maintain the basic information on the query, the new employee information entry, as well as former employees of the information deleted, employee information including the entry time, where the department has the powers and so on.
-Sector Management: Creating hand sector is divided into functional. Easy to classify and manage employees. So add and delete departments. Employees associated with the department, authority associated with the department.
-Rights Management: Character set permissions management, staff and various departments which will have different rights in sectors in which jobs.
-File Management: File primarily for employee files, history archive project management, important documents archive management.
-Customer Relationship Management: The relationship between employees and customers will be associated with the establishment, the establishment of relations, is disconnected. And a corresponding number of customers, and so do the staff management.
-Send and receive files: file system can support each other to send control data.
-Project Management: Project generated from the process until the end, it is necessary to do the project schedule management, project personnel involved in performance appraisal, asset management, and organizational processes.
-Query statistics : For all employees, files, documents and information retrieval done fast search
+1.Staff management: the ability of employees to maintain the basic information on the query, the new employee information entry, as well as former employees of the information deleted, employee information including the entry time, where the department has the powers and so on.
+2.Sector Management: Creating hand sector is divided into functional. Easy to classify and manage employees. So add and delete departments. Employees associated with the department, authority associated with the department.
+3.Rights Management: Character set permissions management, staff and various departments which will have different rights in sectors in which jobs.
+4.File Management: File primarily for employee files, history archive project management, important documents archive management.
+5.Customer Relationship Management: The relationship between employees and customers will be associated with the establishment, the establishment of relations, is disconnected. And a corresponding number of customers, and so do the staff management.
+6.Send and receive files: file system can support each other to send control data.
+7.Project Management: Project generated from the process until the end, it is necessary to do the project schedule management, project personnel involved in performance appraisal, asset management, and organizational processes.
+8.Query statistics : For all employees, files, documents and information retrieval done fast search
 
 系统名称：企业信息管理系统
 搭建环境：Intellij13.0.2 ， Mysql
