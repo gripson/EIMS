@@ -40,4 +40,3 @@ As a core part of the system function is the function module to achieve the foll
 查询统计：查询模块实现针对所有员工、档案、文件信息等做检索实现快速搜索。
 
 
-
