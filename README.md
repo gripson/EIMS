@@ -1,4 +1,4 @@
-EIMS
+EIMS 企业信息管理系统
 ====
 
 Enterprise Information Management System
